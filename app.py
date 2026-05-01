@@ -6,8 +6,8 @@ import plotly.express as px
 st.set_page_config(page_title='Beecrowd Report', page_icon='📊', layout="wide")
 
 @st.cache_data
-def carregar_dados():
-    df = pd.read_csv("desafio - results.csv", sep=";")
+def carregar_dados(file_uploaded):
+    df = pd.read_csv(file_uploaded, sep=";")
     
     # Preenche valores nulos em nomes para evitar erros e cria o Nome Completo
     df['first name'] = df['first name'].fillna('')
@@ -37,8 +37,16 @@ def main():
     st.write('Bem-vindo! Este painel analisa o desempenho dos estudantes em desafios de programação.')
     st.write('Carregue um arquivo CSV exportado do Beecrowd e escolha os filtros abaixo.')
 
+    # --- ÁREA DE UPLOAD ---
+    st.subheader("📁 Envio de Dados")
+    file_uploaded = st.file_uploader("Faça o upload do arquivo CSV com os resultados", type=["csv"])
+
+    if file_uploaded is None:
+        st.info("👆 Por favor, envie o arquivo CSV para visualizar o painel.")
+        return
+    
     try:
-        df = carregar_dados()
+        df = carregar_dados(file_uploaded)
     except FileNotFoundError:
         st.error("O arquivo 'desafio - results.csv' não foi encontrado na pasta. Por favor, verifique.")
         return
