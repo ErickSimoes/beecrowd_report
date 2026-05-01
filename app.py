@@ -119,6 +119,7 @@ def main():
                 'Quase lá': '#ffc107',           # Amarelo
                 'Começou mas desistiu': '#fd7e14'  # Laranja
             },
+            category_orders={'Perfil': ['Aprovados', 'Quase lá', 'Começou mas desistiu']},
             text_auto='.2f'
         )
         st.plotly_chart(fig_bar, use_container_width=True)
