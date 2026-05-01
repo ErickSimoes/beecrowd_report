@@ -47,23 +47,35 @@ def main():
     
     try:
         df = carregar_dados(file_uploaded)
-    except FileNotFoundError:
-        st.error("O arquivo 'desafio - results.csv' não foi encontrado na pasta. Por favor, verifique.")
+    except Exception as e:
+        st.error(f"Erro ao ler o arquivo. Certifique-se de que é um CSV válido. Erro: {e}")
         return
+    
+    st.success("Arquivo carregado com sucesso!")
+    st.divider()
 
     # --- MÉTRICAS GERAIS ---
     total_estudantes = len(df)
     
     st.header("1. Visão Geral")
+
+    with st.expander("ℹ️ **Entenda os perfis são definidos**"):
+        st.markdown("""
+        * 🟩 **Aprovados:** Estudantes que acertaram **6 ou mais** questões
+        * 🟨 **Quase lá:** Estudantes que acertaram **de 4 a 5** questões
+        * 🟧 **Começou mas desistiu:** Estudantes que acertaram **menos de 4** questões (mas que tentaram resolver algo)
+        * 🟥 **Nem tentou:** Estudantes que **não tentaram** fazer nenhum exercício
+        """)
+    
     col1, col2, col3, col4, col5 = st.columns(5)
     
     contagem_perfis = df['Perfil'].value_counts()
     
-    col1.metric("Total de Estudantes", total_estudantes)
-    col2.metric("Aprovados", contagem_perfis.get("Aprovados", 0))
-    col3.metric("Quase lá", contagem_perfis.get("Quase lá", 0))
-    col4.metric("Começou mas desistiu", contagem_perfis.get("Começou mas desistiu", 0))
-    col5.metric("Nem tentou", contagem_perfis.get("Nem tentou", 0))
+    col1.metric("∑ Total de Estudantes", total_estudantes)
+    col2.metric("🟩 Aprovados", contagem_perfis.get("Aprovados", 0))
+    col3.metric("🟨 Quase lá", contagem_perfis.get("Quase lá", 0))
+    col4.metric("🟧 Começou mas desistiu", contagem_perfis.get("Começou mas desistiu", 0))
+    col5.metric("🟥 Nem tentou", contagem_perfis.get("Nem tentou", 0))
 
     st.divider()
 
@@ -87,17 +99,26 @@ def main():
             hole=0.4
         )
         st.plotly_chart(fig_pie, use_container_width=True)
-
+    
     with col_graf2:
-        # Gráfico de Barras: Média de pontuação (score) por perfil
-        media_score = df.groupby('Perfil', as_index=False)['score'].mean()
+        # Filtra o DataFrame para remover o perfil "Nem tentou" do gráfico de barras
+        df_barras = df[df['Perfil'] != 'Nem tentou']
+        
+        # Gráfico de Barras: Média de questões resolvidas (solved) por perfil
+        media_questoes = df_barras.groupby('Perfil', as_index=False)['solved'].mean()
+        
         fig_bar = px.bar(
-            media_score, 
+            media_questoes, 
             x='Perfil', 
-            y='score', 
-            title='Média de Pontuação por Perfil',
-            labels={'score': 'Pontuação Média (Score)', 'Perfil': 'Perfil do Estudante'},
+            y='solved', 
+            title='Média de Questões Resolvidas por Perfil',
+            labels={'solved': 'Média de Questões Resolvidas', 'Perfil': 'Perfil do Estudante'},
             color='Perfil',
+            color_discrete_map={
+                'Aprovados': '#28a745',          # Verde
+                'Quase lá': '#ffc107',           # Amarelo
+                'Começou mas desistiu': '#fd7e14'  # Laranja
+            },
             text_auto='.2f'
         )
         st.plotly_chart(fig_bar, use_container_width=True)
