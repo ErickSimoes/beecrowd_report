@@ -59,7 +59,7 @@ def main():
     
     st.header("1. Visão Geral")
 
-    with st.expander("ℹ️ **Entenda os perfis são definidos**"):
+    with st.expander("ℹ️ **Legenda dos perfis**"):
         st.markdown("""
         * 🟩 **Aprovados:** Estudantes que acertaram **6 ou mais** questões
         * 🟨 **Quase lá:** Estudantes que acertaram **de 4 a 5** questões
