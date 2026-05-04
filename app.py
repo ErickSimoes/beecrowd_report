@@ -58,16 +58,8 @@ def main():
     total_estudantes = len(df)
     
     st.header("1. Visão Geral")
-
-    with st.expander("ℹ️ **Legenda dos perfis**"):
-        st.markdown("""
-        * 🟩 **Aprovados:** Estudantes que acertaram **6 ou mais** questões
-        * 🟨 **Quase lá:** Estudantes que acertaram **de 4 a 5** questões
-        * 🟧 **Começou mas desistiu:** Estudantes que acertaram **menos de 4** questões (mas que tentaram resolver algo)
-        * 🟥 **Nem tentou:** Estudantes que **não tentaram** fazer nenhum exercício
-        """)
     
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     
     contagem_perfis = df['Perfil'].value_counts()
     
@@ -76,6 +68,23 @@ def main():
     col3.metric("🟨 Quase lá", contagem_perfis.get("Quase lá", 0))
     col4.metric("🟧 Começou mas desistiu", contagem_perfis.get("Começou mas desistiu", 0))
     col5.metric("🟥 Nem tentou", contagem_perfis.get("Nem tentou", 0))
+
+    texto_copia = (
+        f"∑ Total: {total_estudantes}\n"
+        f"🟩 Aprovados: {contagem_perfis.get('Aprovados', 0)}\n"
+        f"🟨 Quase lá: {contagem_perfis.get('Quase lá', 0)}\n"
+        f"🟧 Começou mas desistiu: {contagem_perfis.get('Começou mas desistiu', 0)}\n"
+        f"🟥 Nem tentou: {contagem_perfis.get('Nem tentou', 0)}"
+    )
+    col6.code(texto_copia, language="text")
+
+    with st.expander("ℹ️ **Legenda dos perfis**"):
+        st.markdown("""
+        * 🟩 **Aprovados:** Estudantes que acertaram **6 ou mais** questões
+        * 🟨 **Quase lá:** Estudantes que acertaram **de 4 a 5** questões
+        * 🟧 **Começou mas desistiu:** Estudantes que acertaram **menos de 4** questões (mas que tentaram resolver algo)
+        * 🟥 **Nem tentou:** Estudantes que **não tentaram** fazer nenhum exercício
+        """)
 
     st.divider()
 
